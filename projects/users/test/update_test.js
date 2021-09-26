@@ -1,11 +1,12 @@
 const assert = require("assert");
+const { update } = require("../src/user");
 const User = require("../src/user");
 
 describe("Updating records", () => {
   let joe;
 
   beforeEach(async () => {
-    joe = new User({ name: "Joe" });
+    joe = new User({ name: "Joe", postCount: 10 });
 
     await joe.save();
   });
@@ -33,18 +34,33 @@ describe("Updating records", () => {
       { name: "Alex" }
     );
 
-    assert(modifiedCount);
+    assert(modifiedCount === 1);
   });
 
   it("a model class can find a record and update", async () => {
     const user = await User.findOneAndUpdate({ name: "Joe" }, { name: "Alex" });
 
-    assert(!(user === null));
+    assert(user);
+
+    const alex = await User.findById(user._id);
+
+    assert(alex.name === "Alex");
   });
 
   it("a model class can find a record with an id and update", async () => {
-    const user = await User.findByIdAndUpdate(joe._id, { name: "Alex" });
+    await User.findByIdAndUpdate(joe._id, { name: "Alex" });
 
-    assert(!(user === null));
+    const alex = await User.findById(joe._id);
+
+    assert(alex.name === "Alex");
+  });
+
+  it("a user can have their postCount incremented by 1", async () => {
+    const { modifiedCount } = await User.updateMany(
+      { name: "Joe" },
+      { $inc: { postCount: 1 } }
+    );
+
+    assert(modifiedCount);
   });
 });
