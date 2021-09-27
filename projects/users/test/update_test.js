@@ -1,12 +1,11 @@
 const assert = require("assert");
-const { update } = require("../src/user");
 const User = require("../src/user");
 
 describe("Updating records", () => {
   let joe;
 
   beforeEach(async () => {
-    joe = new User({ name: "Joe", postCount: 10 });
+    joe = new User({ name: "Joe", likes: 0 });
 
     await joe.save();
   });
@@ -55,11 +54,11 @@ describe("Updating records", () => {
     assert(alex.name === "Alex");
   });
 
-  it("a user can have their postCount incremented by 1", async () => {
+  it("a user can have their likes incremented by 1", async () => {
     const { modifiedCount } = await User.updateMany(
       { name: "Joe" },
-      { $inc: { postCount: 1 } }
-    );
+      { $inc: { likes: 10 } }
+    );  
 
     assert(modifiedCount);
   });
